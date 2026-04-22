@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Menú de Hamburguesas{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center py-5" style="background: url('https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=1200&h=400&fit=crop') center/cover no-repeat; color: white; position: relative;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5);"></div>
+    <div style="position: relative; z-index: 1;">
+        <h1 class="display-4">¡Bienvenido a Nuestro Restaurante!</h1>
+        <p class="lead">Disfruta de las mejores hamburguesas artesanales</p>
+    </div>
+</div>
+
+{% set is_admin = current_user.is_authenticated and current_user.rol in ['admin', 'super_admin'] %}
+
+<div class="container my-5">
+    <h2 class="text-center mb-4" style="color: #ff6b6b;">Nuestro Menú de Hamburguesas</h2>
+    <div class="row">
+        {% for producto in productos %}
+        <div class="col-md-4 mb-4 producto-card {% if is_admin %}admin-editable{% endif %}" data-id="{{ producto.id }}" style="animation-delay: {{ loop.index * 0.2 }}s; {% if is_admin %}cursor: pointer;{% endif %}">
+            <div class="card h-100 border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header text-center" style="background: #ffa500; color: white; font-size: 2rem;">
+                    <img src="{{ producto.img }}" alt="{{ producto.nombre }}" style="width: 60px; height: 60px; border-radius: 50%;">
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #ff6b6b;">{{ producto.nombre }}</h5>
+                    <p class="card-text">{{ producto.descripcion }}</p>
+                    <p class="card-text"><strong style="color: #28a745; font-size: 1.2rem;">${{ producto.precio }}</strong></p>
+                    {% if is_admin %}
+                    <a href="{{ url_for('main.editar_producto', id=producto.id) }}" class="btn btn-warning btn-lg">Editar</a>
+                    {% elif current_user.is_authenticated %}
+                    <button class="btn btn-warning btn-lg ordenar-btn" data-nombre="{{ producto.nombre }}" data-precio="{{ producto.precio }}">Ordenar Ahora</button>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-warning btn-lg">Iniciar Sesión para Ordenar</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.producto-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.animationPlayState = 'running';
+        }, index * 200);
+    });
+
+    // Admin click to edit
+    const adminCards = document.querySelectorAll('.admin-editable');
+    adminCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (!e.target.matches('a, button')) {
+                const id = this.getAttribute('data-id');
+                window.location.href = '/admin/producto/' + id + '/editar';
+            }
+        });
+    });
+
+    // Manejar hover en cards para blur otras
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            cards.forEach(c => {
+                if (c !== this) {
+                    c.classList.add('blur');
+                }
+            });
+        });
+        card.addEventListener('mouseleave', function() {
+            cards.forEach(c => {
+                c.classList.remove('blur');
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

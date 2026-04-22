@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Productos{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4" style="color: #6b9cff;">Nuestros Productos</h2>
+    {% if current_user.is_authenticated and current_user.rol in ['admin', 'super_admin'] %}
+    <div class="text-center mb-4">
+        <a href="{{ url_for('product.nuevo_producto') }}" class="btn btn-success">+ Nuevo Producto</a>
+    </div>
+    {% endif %}
+    <div class="row">
+        {% for producto in productos %}
+        <div class="col-md-4 mb-4 producto-card">
+            <div class="card h-100 border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header text-center" style="background: #ffa500; color: white; font-size: 2rem;">
+                    <img src="{{ producto.img }}" alt="{{ producto.nombre }}" style="width: 60px; height: 60px; border-radius: 50%;">
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #6b9cff;">{{ producto.nombre }}</h5>
+                    <p class="card-text">{{ producto.descripcion }}</p>
+                    <p class="card-text"><strong style="color: #28a745; font-size: 1.2rem;">${{ producto.precio }}</strong></p>
+                    {% if current_user.is_authenticated and current_user.rol in ['admin', 'super_admin'] %}
+                    <div class="mb-2">
+                        <a href="{{ url_for('product.editar_producto', id=producto.id) }}" class="btn btn-sm btn-primary">Editar</a>
+                        <form method="POST" action="{{ url_for('product.eliminar_producto', id=producto.id) }}" style="display:inline;" onsubmit="return confirm('¿Eliminar este producto?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                    <button class="btn btn-warning btn-lg ordenar-btn">Ordenar Ahora</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.producto-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.animationPlayState = 'running';
+        }, index * 200);
+    });
+
+    // Manejar hover en cards para blur otras
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            cards.forEach(c => {
+                if (c !== this) {
+                    c.classList.add('blur');
+                }
+            });
+        });
+        card.addEventListener('mouseleave', function() {
+            cards.forEach(c => {
+                c.classList.remove('blur');
+            });
+        });
+    });
+
+    // Redirigir al login al hacer clic en ordenar
+    const ordenBtns = document.querySelectorAll('.ordenar-btn');
+    ordenBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            window.location.href = "{{ url_for('auth.login') }}";
+        });
+    });
+});
+</script>
+{% endblock %}
