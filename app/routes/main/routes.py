@@ -4,7 +4,6 @@ from flask_login import login_required, current_user
 from functools import wraps
 from app import db
 from app.models import Producto
-from app.forms import ProductoForm
 
 main = Blueprint('main', __name__)
 
@@ -34,14 +33,18 @@ def admin_productos():
 @login_required
 @admin_required
 def nuevo_producto():
-    form = ProductoForm()
-    if form.validate_on_submit():
-        producto = Producto(nombre=form.nombre.data, descripcion=form.descripcion.data, precio=form.precio.data, img=form.img.data)
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        descripcion = request.form.get('descripcion')
+        precio = float(request.form.get('precio'))
+        img = request.form.get('img')
+
+        producto = Producto(nombre=nombre, descripcion=descripcion, precio=precio, img=img)
         db.session.add(producto)
         db.session.commit()
         flash('Producto agregado.', 'success')
         return redirect(url_for('main.admin_productos'))
-    return render_template('nuevo_producto.html', form=form)
+    return render_template('nuevo_producto.html')
 
 @main.route('/admin/producto/<int:id>/editar', methods=['GET', 'POST'])
 @login_required

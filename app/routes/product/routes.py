@@ -16,19 +16,38 @@ def nuevo_producto():
     if current_user.rol not in ['admin', 'super_admin']:
         flash('No tienes permisos para crear productos.', 'danger')
         return redirect(url_for('product.productos'))
-    
+
     if request.method == 'POST':
         nombre = request.form.get('nombre')
         descripcion = request.form.get('descripcion')
-        precio = float(request.form.get('precio'))
+        precio_str = request.form.get('precio')
         img = request.form.get('img')
-        
-        producto = Producto(nombre=nombre, descripcion=descripcion, precio=precio, img=img)
-        db.session.add(producto)
-        db.session.commit()
-        flash('Producto creado exitosamente.', 'success')
-        return redirect(url_for('product.productos'))
-    
+
+        # Validate required fields
+        if not nombre or not descripcion or not precio_str or not img:
+            flash('Todos los campos son obligatorios.', 'danger')
+            return render_template('editar_producto.html', producto=None)
+
+        try:
+            precio = float(precio_str)
+            if precio <= 0:
+                flash('El precio debe ser mayor a 0.', 'danger')
+                return render_template('editar_producto.html', producto=None)
+        except ValueError:
+            flash('El precio debe ser un número válido.', 'danger')
+            return render_template('editar_producto.html', producto=None)
+
+        try:
+            producto = Producto(nombre=nombre, descripcion=descripcion, precio=precio, img=img)
+            db.session.add(producto)
+            db.session.commit()
+            flash('Producto creado exitosamente.', 'success')
+            return redirect(url_for('product.productos'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al crear el producto: {str(e)}', 'danger')
+            return render_template('editar_producto.html', producto=None)
+
     return render_template('editar_producto.html', producto=None)
 
 @product.route('/productos/editar/<int:id>', methods=['GET', 'POST'])
@@ -37,18 +56,42 @@ def editar_producto(id):
     if current_user.rol not in ['admin', 'super_admin']:
         flash('No tienes permisos para editar productos.', 'danger')
         return redirect(url_for('product.productos'))
-    
+
     producto = Producto.query.get_or_404(id)
-    
+
     if request.method == 'POST':
-        producto.nombre = request.form.get('nombre')
-        producto.descripcion = request.form.get('descripcion')
-        producto.precio = float(request.form.get('precio'))
-        producto.img = request.form.get('img')
-        db.session.commit()
-        flash('Producto actualizado.', 'success')
-        return redirect(url_for('product.productos'))
-    
+        nombre = request.form.get('nombre')
+        descripcion = request.form.get('descripcion')
+        precio_str = request.form.get('precio')
+        img = request.form.get('img')
+
+        # Validate required fields
+        if not nombre or not descripcion or not precio_str or not img:
+            flash('Todos los campos son obligatorios.', 'danger')
+            return render_template('editar_producto.html', producto=producto)
+
+        try:
+            precio = float(precio_str)
+            if precio <= 0:
+                flash('El precio debe ser mayor a 0.', 'danger')
+                return render_template('editar_producto.html', producto=producto)
+        except ValueError:
+            flash('El precio debe ser un número válido.', 'danger')
+            return render_template('editar_producto.html', producto=producto)
+
+        try:
+            producto.nombre = nombre
+            producto.descripcion = descripcion
+            producto.precio = precio
+            producto.img = img
+            db.session.commit()
+            flash('Producto actualizado.', 'success')
+            return redirect(url_for('product.productos'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al actualizar el producto: {str(e)}', 'danger')
+            return render_template('editar_producto.html', producto=producto)
+
     return render_template('editar_producto.html', producto=producto)
 
 @product.route('/productos/eliminar/<int:id>', methods=['POST'])
@@ -57,9 +100,13 @@ def eliminar_producto(id):
     if current_user.rol not in ['admin', 'super_admin']:
         flash('No tienes permisos para eliminar productos.', 'danger')
         return redirect(url_for('product.productos'))
-    
+
     producto = Producto.query.get_or_404(id)
-    db.session.delete(producto)
-    db.session.commit()
-    flash('Producto eliminado.', 'success')
+    try:
+        db.session.delete(producto)
+        db.session.commit()
+        flash('Producto eliminado.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el producto: {str(e)}', 'danger')
     return redirect(url_for('product.productos'))
