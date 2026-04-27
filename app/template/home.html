@@ -1,29 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}Menú de Hamburguesas{% endblock %}
+{% block title %}Nuestro Menú Gourmet{% endblock %}
 
 {% block content %}
+<style>
+body {
+    background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=800&fit=crop') no-repeat center center fixed;
+    background-size: cover;
+}
+.container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.ordenar-btn {
+    background-color: #722f37;
+    border-color: #722f37;
+    color: white;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+.ordenar-btn:hover {
+    background-color: #e11111;
+    border-color: #e11111;
+}
+</style>
 <div class="hero-section text-center py-5" style="background: url('https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=1200&h=400&fit=crop') center/cover no-repeat; color: white; position: relative;">
     <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5);"></div>
     <div style="position: relative; z-index: 1;">
         <h1 class="display-4">¡Bienvenido a Nuestro Restaurante!</h1>
-        <p class="lead">Disfruta de las mejores hamburguesas artesanales</p>
+        <p class="lead">Disfruta de la mejor comida gourmet artesanal</p>
     </div>
+</div>
 </div>
 
 {% set is_admin = current_user.is_authenticated and current_user.rol in ['admin', 'super_admin'] %}
 
 <div class="container my-5">
-    <h2 class="text-center mb-4" style="color: #ff6b6b;">Nuestro Menú de Hamburguesas</h2>
+    <h2 class="text-center mb-4" style="color: #e11111;">Nuestro Menú Gourmet</h2>
     <div class="row">
         {% for producto in productos %}
         <div class="col-md-4 mb-4 producto-card {% if is_admin %}admin-editable{% endif %}" data-id="{{ producto.id }}" style="animation-delay: {{ loop.index * 0.2 }}s; {% if is_admin %}cursor: pointer;{% endif %}">
-            <div class="card h-100 border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
-                <div class="card-header text-center" style="background: #ffa500; color: white; font-size: 2rem;">
-                    <img src="{{ producto.img }}" alt="{{ producto.nombre }}" style="width: 60px; height: 60px; border-radius: 50%;">
+            <div class="card border-0 shadow-lg" style="border-radius: 15px; overflow: hidden; height: 500px;">
+                <div class="card-header text-center" style="background: url('{{ producto.img }}') center/contain no-repeat; height: 200px; border-radius: 15px 15px 0 0;">
                 </div>
-                <div class="card-body text-center">
-                    <h5 class="card-title" style="color: #ff6b6b;">{{ producto.nombre }}</h5>
+                <div class="card-body text-center" style="overflow-y: auto; max-height: 250px;">
+                    <h5 class="card-title" style="color: #e11111;">{{ producto.nombre }}</h5>
                     <p class="card-text">{{ producto.descripcion }}</p>
                     <p class="card-text"><strong style="color: #28a745; font-size: 1.2rem;">${{ producto.precio }}</strong></p>
                     {% if is_admin %}
@@ -31,7 +54,7 @@
                     {% elif current_user.is_authenticated %}
                     <button class="btn btn-warning btn-lg ordenar-btn" data-nombre="{{ producto.nombre }}" data-precio="{{ producto.precio }}">Ordenar Ahora</button>
                     {% else %}
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-warning btn-lg">Iniciar Sesión para Ordenar</a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-danger btn-lg">Iniciar Sesión para Ordenar</a>
                     {% endif %}
                 </div>
             </div>
@@ -49,14 +72,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }, index * 200);
     });
 
-    // Admin click to edit
-    const adminCards = document.querySelectorAll('.admin-editable');
-    adminCards.forEach(card => {
-        card.addEventListener('click', function(e) {
-            if (!e.target.matches('a, button')) {
-                const id = this.getAttribute('data-id');
-                window.location.href = '/admin/producto/' + id + '/editar';
-            }
+    // Admin click to edit - removed to avoid conflicts with existing edit links
+
+    // Manejar botones de ordenar
+    const ordenarBtns = document.querySelectorAll('.ordenar-btn');
+    ordenarBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.closest('.producto-card').getAttribute('data-id');
+            window.location.href = '/ordenar?product_id=' + productId;
         });
     });
 

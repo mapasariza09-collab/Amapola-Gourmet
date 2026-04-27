@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Órdenes{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4" style="color: #ff6b6b;">Mis Órdenes</h2>
+
+    {% if orders %}
+    <div class="row">
+        {% for order in orders %}
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #ff6b6b;">{{ order.product.nombre }}</h5>
+                    <p class="card-text">{{ order.product.descripcion }}</p>
+                    <p class="card-text"><strong>Cantidad:</strong> {{ order.quantity }}</p>
+                    <p class="card-text"><strong>Dirección de Envío:</strong> {{ order.delivery_address }}</p>
+                    <p class="card-text"><strong>Total:</strong> ${{ order.total_price }}</p>
+                    <p class="card-text">
+                        <strong>Método de Pago:</strong>
+                        <span class="badge badge-info">
+                            {% if order.payment_method == 'contraentrega' %}
+                                Contraentrega
+                            {% elif order.payment_method == 'transferencia' %}
+                                Transferencia Bancaria
+                            {% elif order.payment_method == 'nequi' %}
+                                Nequi
+                            {% else %}
+                                {{ order.payment_method }}
+                            {% endif %}
+                        </span>
+                    </p>
+                    {% if order.payment_method == 'transferencia' %}
+                    <div class="alert alert-info mt-2">
+                        <small><strong>Información de Pago:</strong> Transferencia realizada. Procesando orden.</small>
+                    </div>
+                    {% elif order.payment_method == 'nequi' %}
+                    <div class="alert alert-info mt-2">
+                        <small><strong>Información de Pago:</strong> Pago realizado vía Nequi. Procesando orden.</small>
+                    </div>
+                    {% endif %}
+                    <p class="card-text">
+                        <strong>Estado:</strong>
+                        <span class="badge
+                            {% if order.status == 'pendiente' %}badge-warning
+                            {% elif order.status == 'confirmado' %}badge-info
+                            {% elif order.status == 'enviado' %}badge-primary
+                            {% elif order.status == 'entregado' %}badge-success
+                            {% else %}badge-secondary{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </p>
+                    {% if current_user.rol in ['admin', 'super_admin'] %}
+                    <form method="POST" action="{{ url_for('order.update_order', order_id=order.id) }}" class="mt-2">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="form-row align-items-center">
+                            <div class="col-auto">
+                                <select name="status" class="form-control form-control-sm">
+                                    <option value="pendiente" {% if order.status == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                    <option value="confirmado" {% if order.status == 'confirmado' %}selected{% endif %}>Confirmado</option>
+                                    <option value="enviado" {% if order.status == 'enviado' %}selected{% endif %}>Enviado</option>
+                                    <option value="entregado" {% if order.status == 'entregado' %}selected{% endif %}>Entregado</option>
+                                    <option value="cancelado" {% if order.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+                    <p class="card-text"><small class="text-muted">Fecha: {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center">
+        <p>No has realizado ninguna orden aún.</p>
+        <a href="{{ url_for('main.home') }}" class="btn btn-primary">Ver Menú</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

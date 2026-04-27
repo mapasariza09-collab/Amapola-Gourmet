@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required
-from app import db
-from app.models import User
+from flask_mail import Message
+from app import db, mail
+from app.models import User, Producto
 
 auth = Blueprint('auth', __name__)
 
@@ -44,10 +45,51 @@ def login():
         else:
             flash('Credenciales inválidas.', 'danger')
 
-    return render_template('login.html')
+    productos = Producto.query.all()
+    return render_template('login.html', productos=productos)
 
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
+
+@auth.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        correo = request.form.get('correo')
+        user = User.query.filter_by(correo=correo).first()
+        if user:
+            token = user.get_reset_token()
+            msg = Message('Recuperación de Contraseña - Amapola Gourmet',
+                          recipients=[correo])
+            msg.body = f'''Hola {user.nombre},
+
+Has solicitado recuperar tu contraseña para Amapola Gourmet.
+
+Para restablecer tu contraseña, visita el siguiente enlace:
+
+{url_for('auth.reset_password', token=token, _external=True)}
+
+Este enlace expirará en 30 minutos.
+
+Si no solicitaste este cambio, ignora este mensaje.
+
+Saludos,
+Equipo de Amapola Gourmet
+'''
+            mail.send(msg)
+        return redirect(url_for('auth.login'))
+    return render_template('forgot_password.html')
+
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    user = User.verify_reset_token(token)
+    if user is None:
+        return redirect(url_for('auth.login'))
+    if request.method == 'POST':
+        password = request.form.get('password')
+        user.set_password(password)
+        db.session.commit()
+        return redirect(url_for('auth.login'))
+    return render_template('reset_password.html')

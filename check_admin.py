@@ -1,21 +1,33 @@
 from app import create_app
+from flask_login import login_user
 from app.models import User
-from app.extensions import db
-import os
 
 app = create_app()
 with app.app_context():
-    admin_email = os.getenv('ADMIN_EMAIL', 'paulas@admin.com')
-    admin_name = os.getenv('ADMIN_NAME', 'paulas')
-    admin = User.query.filter_by(correo=admin_email).first()
-    if admin:
-        print(f"Super admin encontrado: {admin.nombre}, correo: {admin.correo}")
+    # Buscar el usuario admin
+    user = User.query.filter_by(correo='paulas@admin.com').first()
+
+    if user:
+        print(f"Usuario encontrado:")
+        print(f"- Nombre: {user.nombre}")
+        print(f"- Email: {user.correo}")
+        print(f"- Rol: {user.rol}")
+        print(f"- Tiene permisos de admin: {user.rol in ['admin', 'super_admin']}")
+
+        # Intentar hacer login
+        from flask import Flask
+        from flask_login import LoginManager
+        login_manager = LoginManager()
+        login_manager.init_app(app)
+
+        with app.test_request_context():
+            login_user(user)
+            print(f"- Login exitoso: {user.is_authenticated}")
     else:
-        print("Super admin no existe. Creando...")
-        admin_password = os.getenv('ADMIN_PASSWORD', 'paulas@')
-        admin_role = os.getenv('ADMIN_ROLE', 'super_admin')
-        admin = User(nombre=admin_name, correo=admin_email, direccion='Admin Address', telefono='123456789', rol=admin_role)
-        admin.set_password(admin_password)
-        db.session.add(admin)
-        db.session.commit()
-        print("Super admin creado!")
+        print("Usuario admin no encontrado")
+
+    # Verificar productos
+    productos = user.__class__.__bases__[0].__subclasses__()[0].query.all()
+    print(f"\nProductos en BD: {len(productos)}")
+    for p in productos[:3]:  # Mostrar solo los primeros 3
+        print(f"- {p.nombre}")

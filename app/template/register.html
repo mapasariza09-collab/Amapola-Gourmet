@@ -3,10 +3,24 @@
 {% block title %}Registro{% endblock %}
 
 {% block content %}
+<style>
+body {
+    background: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&h=800&fit=crop') no-repeat center center fixed;
+    background-size: cover;
+}
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 30px;
+    margin-top: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+</style>
 <div class="row justify-content-center">
     <div class="col-md-6 register-form">
         <h2>Registro</h2>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div class="form-group">
                 <label for="nombre">Nombre</label>
                 <input type="text" class="form-control" id="nombre" name="nombre" required>

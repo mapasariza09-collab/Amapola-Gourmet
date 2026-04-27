@@ -20,7 +20,7 @@ with app.app_context():
             producto.img = imagen
 
     db.session.commit()
-    print("Imágenes de hamburguesas restauradas a las originales.")
+    print("Imágenes de productos restauradas a las originales.")
 
     # Mostrar productos actualizados
     productos_actualizados = Producto.query.all()

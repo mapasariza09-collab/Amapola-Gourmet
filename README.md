@@ -1,13 +1,13 @@
-# 🍔 Hamburguesas Deliciosas
+# 🌸 Amapola Gourmet
 
-Una aplicación web Flask para gestión de productos de una hamburguesería con autenticación de usuarios.
+Una aplicación web Flask para gestión de productos gourmet con autenticación de usuarios.
 
 ## 📋 Características
 
-- **Autenticación de usuarios**: Registro y login seguro
+- **Autenticación de usuarios**: Registro, login y recuperación de contraseña con enlace seguro por email
 - **Gestión de productos**: Crear, editar, eliminar y visualizar productos
 - **Sistema de roles**: Usuarios normales y administradores
-- **Interfaz responsiva**: Diseño moderno con Bootstrap
+- **Interfaz responsiva**: Diseño moderno con Bootstrap y colores personalizados (gradiente rojo-vinotinto en navbar, botones rojos para acciones importantes)
 - **Base de datos SQLite**: Persistencia de datos simple y eficiente
 
 ## 🚀 Instalación y Configuración
@@ -51,6 +51,7 @@ Flask==2.3.3          # Framework web
 Flask-SQLAlchemy==3.0.5  # ORM para base de datos
 Flask-Login==0.6.3    # Gestión de sesiones de usuario
 Flask-WTF==1.2.2      # Formularios web seguros
+Flask-Mail==0.9.1     # Envío de correos electrónicos
 Werkzeug==2.3.7       # Utilidades WSGI
 ```
 
@@ -67,12 +68,12 @@ La aplicación estará disponible en: http://127.0.0.1:5000
 
 1. **Construye la imagen:**
    ```bash
-   docker build -t hamburguesas-deliciosas .
+    docker build -t amapola-gourmet .
    ```
 
 2. **Ejecuta el contenedor:**
    ```bash
-   docker run -p 5000:5000 hamburguesas-deliciosas
+    docker run -p 5000:5000 amapola-gourmet
    ```
 
 ## 👥 Usuarios por defecto

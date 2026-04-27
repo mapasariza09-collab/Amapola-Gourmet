@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Realizar Orden{% endblock %}
+
+{% block content %}
+<style>
+body {
+    background: url('https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=1200&h=800&fit=crop') no-repeat center center fixed;
+    background-size: cover;
+}
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 30px;
+    margin-top: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 2px solid #e11111;
+}
+.order-form .form-group label {
+    color: #722f37;
+    font-weight: bold;
+}
+.order-form .btn-success {
+    background-color: #722f37;
+    border-color: #722f37;
+    transition: background-color 0.3s;
+}
+.order-form .btn-success:hover {
+    background-color: #e11111;
+    border-color: #e11111;
+}
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+</style>
+<div class="row justify-content-center">
+    <div class="col-md-8 order-form">
+        <h2 class="text-center mb-4" style="color: #722f37;">🍽️ Realizar Orden 🍽️</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="form-group">
+                <label for="product_id">Producto</label>
+                <select class="form-control" id="product_id" name="product_id" required onchange="updatePrice()">
+                    <option value="">Selecciona un producto</option>
+                    {% for producto in productos %}
+                    <option value="{{ producto.id }}" data-precio="{{ producto.precio }}" {% if selected_product_id == producto.id %}selected{% endif %}>
+                        {{ producto.nombre }} - ${{ producto.precio }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Cantidad</label>
+                <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" required onchange="updatePrice()">
+            </div>
+            <div class="form-group">
+                <label for="total_price">Total</label>
+                <input type="text" class="form-control" id="total_price" readonly value="$0.00">
+            </div>
+            <div class="form-group">
+                <label for="direccion_envio">Dirección de Envío</label>
+                <textarea class="form-control" id="direccion_envio" name="direccion_envio" rows="3" required placeholder="Ingresa la dirección completa donde quieres recibir tu pedido">{{ current_user.direccion if current_user.direccion else '' }}</textarea>
+                <small class="form-text text-muted">Dirección completa: Calle, número, barrio, ciudad, referencias adicionales.</small>
+            </div>
+            <div class="form-group">
+                <label for="payment_method">Método de Pago</label>
+                <select class="form-control" id="payment_method" name="payment_method" required>
+                    <option value="contraentrega">Contraentrega - Pagar al recibir el pedido</option>
+                    <option value="transferencia">Transferencia Bancaria - Pagar ahora</option>
+                    <option value="nequi">Nequi - Pago móvil inmediato</option>
+                </select>
+                <small class="form-text text-muted">
+                    <strong>Contraentrega:</strong> Paga cómodamente cuando recibas tu pedido en la puerta de tu casa.<br>
+                    <strong>Transferencia:</strong> Realiza el pago inmediatamente vía transferencia bancaria para procesar tu orden más rápido.<br>
+                    <strong>Nequi:</strong> Pago rápido y seguro a través de la app Nequi con tu celular.
+                </small>
+            </div>
+            <div id="payment-info" class="mt-3"></div>
+            <button type="submit" class="btn btn-success btn-lg btn-block">Confirmar Orden</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function updatePrice() {
+    const productSelect = document.getElementById('product_id');
+    const quantityInput = document.getElementById('quantity');
+    const totalInput = document.getElementById('total_price');
+
+    const selectedOption = productSelect.options[productSelect.selectedIndex];
+    const precio = selectedOption ? parseFloat(selectedOption.getAttribute('data-precio')) || 0 : 0;
+    const quantity = parseInt(quantityInput.value) || 0;
+
+    const total = precio * quantity;
+    totalInput.value = '$' + total.toFixed(2);
+}
+
+function updatePaymentInfo() {
+    const paymentMethod = document.getElementById('payment_method').value;
+    const paymentInfo = document.getElementById('payment-info');
+
+    if (paymentMethod === 'transferencia') {
+        paymentInfo.innerHTML = `
+            <div class="alert alert-warning">
+                <h6><strong>Información para Transferencia:</strong></h6>
+                <p><strong>Banco:</strong> Banco Nacional<br>
+                <strong>Cuenta:</strong> 123-456-789<br>
+                <strong>Titular:</strong> Amapola Gourmet S.A.<br>
+                <strong>Referencia:</strong> Tu número de orden</p>
+                <small class="text-muted">Una vez realizada la transferencia, envíanos el comprobante para confirmar tu pago.</small>
+            </div>
+        `;
+    } else if (paymentMethod === 'nequi') {
+        paymentInfo.innerHTML = `
+            <div class="alert alert-info">
+                <h6><strong>Información para Pago con Nequi:</strong></h6>
+                <p><strong>Número de Nequi:</strong> 300-123-4567<br>
+                <strong>Titular:</strong> Amapola Gourmet</p>
+                <small class="text-muted">Realiza el pago desde tu app Nequi. Una vez confirmado el pago, procesaremos tu orden inmediatamente.</small>
+            </div>
+        `;
+    } else {
+        paymentInfo.innerHTML = `
+            <div class="alert alert-success">
+                <strong>Contraentrega:</strong> Paga cómodamente al recibir tu pedido en la puerta de tu casa.
+            </div>
+        `;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    updatePrice();  // Calculate initial price
+    updatePaymentInfo();  // Show initial payment info
+
+    // Update payment info when method changes
+    document.getElementById('payment_method').addEventListener('change', updatePaymentInfo);
+});
+</script>
+{% endblock %}

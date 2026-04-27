@@ -6,6 +6,7 @@
 <div class="container my-5">
     <h2>Agregar Nuevo Producto</h2>
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
             <input type="text" class="form-control" id="nombre" name="nombre" required>
