@@ -3,6 +3,10 @@ from .extensions import db, login_manager, csrf, mail
 from .models import User, Producto, Order
 import os
 from sqlalchemy import text
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 def create_app():
     app = Flask(__name__, template_folder='template')

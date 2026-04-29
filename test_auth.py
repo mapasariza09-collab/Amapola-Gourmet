@@ -1,11 +1,12 @@
+import os
 from app import create_app
 from app.models import User
 
 app = create_app()
 with app.app_context():
-    user = User.query.filter_by(nombre='Paula', rol='super_admin').first()
+    user = User.query.filter_by(rol='super_admin').first()
     if user:
-        test_pass = 'paulas@'
+        test_pass = os.getenv('ADMIN_PASSWORD', 'paulas@')
         result = user.check_password(test_pass)
         print(f"Usuario: {user.nombre}")
         print(f"Correo: {user.correo}")
