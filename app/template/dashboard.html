@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard de Ventas{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4" style="color: #ff6b6b;">Dashboard de Ventas</h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="card-header" style="background: linear-gradient(45deg, #e11111, #722f37); color: white; border-radius: 15px 15px 0 0;">
+                    <h5>Ventas Diarias (Últimos 30 días)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="dailySalesChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="card-header" style="background: linear-gradient(45deg, #e11111, #722f37); color: white; border-radius: 15px 15px 0 0;">
+                    <h5>Ventas Mensuales (Últimos 12 meses)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlySalesChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="card-header" style="background: linear-gradient(45deg, #e11111, #722f37); color: white; border-radius: 15px 15px 0 0;">
+                    <h5>Resumen de Ventas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>Total Ventas Hoy</h6>
+                            <p class="h4">${{ "%.2f"|format(total_today) }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Total Ventas Este Mes</h6>
+                            <p class="h4">${{ "%.2f"|format(total_month) }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Total Ventas Anuales</h6>
+                            <p class="h4">${{ "%.2f"|format(total_year) }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Promedio Diario</h6>
+                            <p class="h4">${{ "%.2f"|format(avg_daily) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Daily Sales Chart
+    const dailyLabels = {{ daily_labels|tojson }};
+    const dailyData = {{ daily_data|tojson }};
+
+    const dailyCtx = document.getElementById('dailySalesChart').getContext('2d');
+    new Chart(dailyCtx, {
+        type: 'bar',
+        data: {
+            labels: dailyLabels,
+            datasets: [{
+                label: 'Ventas Diarias ($)',
+                data: dailyData,
+                backgroundColor: 'rgba(225, 17, 17, 0.6)',
+                borderColor: 'rgba(225, 17, 17, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Monthly Sales Chart
+    const monthlyLabels = {{ monthly_labels|tojson }};
+    const monthlyData = {{ monthly_data|tojson }};
+
+    const monthlyCtx = document.getElementById('monthlySalesChart').getContext('2d');
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                label: 'Ventas Mensuales ($)',
+                data: monthlyData,
+                backgroundColor: 'rgba(114, 47, 55, 0.6)',
+                borderColor: 'rgba(114, 47, 55, 1)',
+                borderWidth: 2,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

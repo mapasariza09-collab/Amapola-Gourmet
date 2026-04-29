@@ -9,7 +9,6 @@ body {
     background-size: cover;
 }
 .container {
-    background: rgba(255, 255, 255, 0.9);
     border-radius: 15px;
     padding: 20px;
     margin-top: 20px;
@@ -49,13 +48,16 @@ body {
                     <h5 class="card-title" style="color: #e11111;">{{ producto.nombre }}</h5>
                     <p class="card-text">{{ producto.descripcion }}</p>
                     <p class="card-text"><strong style="color: #28a745; font-size: 1.2rem;">${{ producto.precio }}</strong></p>
-                    {% if is_admin %}
-                    <a href="{{ url_for('main.editar_producto', id=producto.id) }}" class="btn btn-warning btn-lg">Editar</a>
-                    {% elif current_user.is_authenticated %}
-                    <button class="btn btn-warning btn-lg ordenar-btn" data-nombre="{{ producto.nombre }}" data-precio="{{ producto.precio }}">Ordenar Ahora</button>
-                    {% else %}
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-danger btn-lg">Iniciar Sesión para Ordenar</a>
-                    {% endif %}
+                     {% if is_admin %}
+                     <a href="{{ url_for('main.editar_producto', id=producto.id) }}" class="btn btn-warning btn-lg">Editar</a>
+                     {% elif current_user.is_authenticated %}
+                     <form method="POST" action="{{ url_for('order.add_to_cart', product_id=producto.id) }}" class="d-inline">
+                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                         <button type="submit" class="btn btn-warning btn-lg">Agregar al Carrito</button>
+                     </form>
+                     {% else %}
+                     <a href="{{ url_for('auth.login') }}" class="btn btn-danger btn-lg">Iniciar Sesión para Ordenar</a>
+                     {% endif %}
                 </div>
             </div>
         </div>

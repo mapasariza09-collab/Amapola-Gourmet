@@ -5,6 +5,7 @@
     <title>{% block title %}Mi App{% endblock %}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='WhatsApp Image 2026-04-28 at 2.27.51 PM.jpeg') }}" type="image/jpeg">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
@@ -12,13 +13,15 @@
     <nav class="navbar navbar-expand-lg" style="background: linear-gradient(45deg, #e11111, #722f37);">
         <a class="navbar-brand text-white font-weight-bold" href="{{ url_for('main.home') }}">🌸 Amapola Gourmet</a>
         <div class="navbar-nav ml-auto">
-            {% if current_user.is_authenticated %}
-                {% if current_user.rol in ['admin', 'super_admin'] %}
-                <a class="nav-link text-white" href="{{ url_for('order.mis_ordenes') }}">Ver Órdenes</a>
-                {% else %}
-                <a class="nav-link text-white" href="{{ url_for('order.mis_ordenes') }}">Mis Órdenes</a>
-                {% endif %}
-                <a class="nav-link text-white" href="{{ url_for('auth.logout') }}">Logout</a>
+             {% if current_user.is_authenticated %}
+                 {% if current_user.rol in ['admin', 'super_admin'] %}
+                 <a class="nav-link text-white" href="{{ url_for('order.dashboard') }}">Dashboard</a>
+                 <a class="nav-link text-white" href="{{ url_for('order.mis_ordenes') }}">Ver Órdenes</a>
+                 {% else %}
+                 <a class="nav-link text-white" href="{{ url_for('order.mis_ordenes') }}">Historial</a>
+                 {% endif %}
+                 <a class="nav-link text-white" href="{{ url_for('order.cart') }}">🛒 Carrito</a>
+                 <a class="nav-link text-white" href="{{ url_for('auth.logout') }}">Logout</a>
             {% else %}
                 <a class="nav-link text-white" href="{{ url_for('auth.login') }}">Login</a>
                 <a class="nav-link text-white" href="{{ url_for('auth.register') }}">Registro</a>
@@ -35,5 +38,34 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+    <footer style="background: white; padding: 40px 0; margin-top: 40px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>🌸 Amapola Gourmet</h5>
+                    <p>Disfruta de la mejor comida gourmet artesanal preparada con ingredientes frescos y de alta calidad.</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Redes Sociales</h5>
+                    <div>
+                        <a href="https://www.facebook.com/people/Amapola-Gourmet/61571468361708/" target="_blank" class="text-white mr-3">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" style="width: 20px; height: 20px;">
+                        </a>
+                        <a href="https://www.instagram.com/amapolagourmet1/" target="_blank" class="text-white mr-3">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" style="width: 20px; height: 20px;">
+                        </a>
+                        <a href="https://wa.me/573012817435" target="_blank" class="text-white mr-3">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 20px; height: 20px;">
+                        </a>
+                    </div>
+                    <p class="mt-3">Síguenos para las últimas novedades y ofertas especiales.</p>
+                </div>
+            </div>
+            <hr style="background-color: white;">
+            <div class="text-center">
+                <p>&copy; 2026 Amapola Gourmet. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

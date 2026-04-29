@@ -56,7 +56,7 @@ class Order(db.Model):
     total_price = db.Column(db.Float, nullable=False)
     payment_method = db.Column(db.String(20), nullable=False, default='contraentrega')  # 'transferencia', 'contraentrega', 'nequi'
     delivery_address = db.Column(db.String(300), nullable=False)
-    status = db.Column(db.String(50), nullable=False, default='pendiente')  # 'pendiente', 'confirmado', 'entregado', 'cancelado'
+    status = db.Column(db.String(50), nullable=False, default='pendiente')  # 'pendiente', 'confirmado', 'enviado', 'entregado', 'cancelado'
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     # Relationships
