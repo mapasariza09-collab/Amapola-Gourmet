@@ -6,7 +6,7 @@ app = create_app()
 with app.app_context():
     user = User.query.filter_by(rol='super_admin').first()
     if user:
-        test_pass = os.getenv('ADMIN_PASSWORD', 'paulas@')
+        test_pass = os.getenv('ADMIN_PASSWORD')
         result = user.check_password(test_pass)
         print(f"Usuario: {user.nombre}")
         print(f"Correo: {user.correo}")
