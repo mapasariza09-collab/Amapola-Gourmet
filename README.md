@@ -76,10 +76,6 @@ La aplicación estará disponible en: http://127.0.0.1:5000
     docker run -p 5000:5000 amapola-gourmet
    ```
 
-## 👥 Usuarios por defecto
-
-- **Administrador**: `paulas` / `paulas@`
-- **Email admin**: `paulas@admin.com`
 
 ## 📁 Estructura del proyecto
 
