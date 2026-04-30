@@ -122,7 +122,6 @@ Puedes configurar estas variables de entorno:
 
 - `ADMIN_NAME`: Nombre del administrador (default: 'paulas')
 - `ADMIN_EMAIL`: Email del administrador (default: 'paulas@admin.com')
-- `ADMIN_PASSWORD`: Contraseña del administrador (default: 'paulas@')
 - `ADMIN_ROLE`: Rol del administrador (default: 'super_admin')
 
 ## 📝 Notas de desarrollo
