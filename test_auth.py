@@ -9,7 +9,7 @@ with app.app_context():
         test_pass = os.getenv('ADMIN_PASSWORD')
         result = user.check_password(test_pass)
         print(f"Usuario: {user.nombre}")
-        print(f"Correo: {user.correo}")
+        print(f"Correo: {user.correo}") 
         print(f"Rol: {user.rol}")
         print(f"Password hash: {user.password_hash}")
         print(f"check_password('{test_pass}'): {result}")
