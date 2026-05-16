@@ -93,3 +93,6 @@ def reset_password(token):
         db.session.commit()
         return redirect(url_for('auth.login'))
     return render_template('reset_password.html')
+@auth.route('/')
+def home():
+    return redirect(url_for('auth.login'))
