@@ -11,7 +11,7 @@
         {% for order in orders %}
         <div class="col-md-4 mb-4">
             <div class="card border-0 shadow-lg" style="border-radius: 15px; height: 500px;">
-                <div class="card-header text-center" style="background: url('{{ order.product.img }}') center/contain no-repeat; height: 200px; border-radius: 15px 15px 0 0;">
+                <div class="card-header text-center" style="background: url('{{ order.product.img }}') center/cover no-repeat; height: 200px; border-radius: 15px 15px 0 0;">
                 </div>
                 <div class="card-body text-center" style="overflow-y: auto; max-height: 250px;">
                     <h5 class="card-title" style="color: #ff6b6b;">{{ order.product.nombre }}</h5>

@@ -11,7 +11,7 @@
                     <h4>{{ 'Editar' if producto else 'Nuevo' }} Producto</h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="form-group mb-3">
                             <label for="nombre">Nombre</label>
@@ -26,8 +26,15 @@
                             <input type="number" class="form-control" id="precio" name="precio" step="0.01" value="{{ producto.precio if producto else '' }}" required>
                         </div>
                         <div class="form-group mb-3">
-                            <label for="img">URL de Imagen</label>
-                            <input type="url" class="form-control" id="img" name="img" value="{{ producto.img if producto else '' }}" required>
+                            <label for="img">Imagen del Producto</label>
+                            <input type="file" class="form-control" id="img" name="img" accept="image/*" {{ 'required' if not producto else '' }}>
+                            <small class="form-text text-muted">Selecciona una imagen (JPG, PNG, etc.). Si no seleccionas una imagen, se mantendrá la actual.</small>
+                            {% if producto %}
+                            <div class="mt-2">
+                                <small>Imagen actual:</small><br>
+                                <img src="{{ producto.img }}" alt="Imagen actual" style="max-width: 100px; max-height: 100px; border: 1px solid #ddd;">
+                            </div>
+                            {% endif %}
                         </div>
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">Guardar</button>

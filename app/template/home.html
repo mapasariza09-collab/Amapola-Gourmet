@@ -42,7 +42,7 @@ body {
         {% for producto in productos %}
         <div class="col-md-4 mb-4 producto-card {% if is_admin %}admin-editable{% endif %}" data-id="{{ producto.id }}" style="animation-delay: {{ loop.index * 0.2 }}s; {% if is_admin %}cursor: pointer;{% endif %}">
             <div class="card border-0 shadow-lg" style="border-radius: 15px; overflow: hidden; height: 500px;">
-                <div class="card-header text-center" style="background: url('{{ producto.img }}') center/contain no-repeat; height: 200px; border-radius: 15px 15px 0 0;">
+                <div class="card-header text-center" style="background: url('{{ producto.img }}') center/cover no-repeat; height: 200px; border-radius: 15px 15px 0 0;">
                 </div>
                 <div class="card-body text-center" style="overflow-y: auto; max-height: 250px;">
                     <h5 class="card-title" style="color: #e11111;">{{ producto.nombre }}</h5>
