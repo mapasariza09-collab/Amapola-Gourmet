@@ -9,9 +9,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db.init_app(app)
 login_manager.init_app(app)
 
+# IMPORTAR BLUEPRINT
 from app.routes.auth.routes import auth
+
+# REGISTRAR BLUEPRINT
 app.register_blueprint(auth)
 
+# RUTA PRINCIPAL
 @app.route('/')
 def home():
     return "Amapola Gourmet funcionando 🚀"
