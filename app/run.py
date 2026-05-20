@@ -4,7 +4,9 @@ from app.extensions import db, login_manager
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'amapola123'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+import os
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 
 db.init_app(app)
 login_manager.init_app(app)
