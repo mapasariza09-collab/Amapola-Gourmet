@@ -16,7 +16,11 @@ from app.models import User, Producto, Order
 
 # CREAR TABLAS
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+        print("TABLAS CREADAS")
+    except Exception as e:
+        print("ERROR BD:", e)
 
 # IMPORTAR BLUEPRINT
 from app.routes.auth.routes import auth
