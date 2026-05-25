@@ -11,8 +11,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 login_manager.init_app(app)
 
-from app.models import User, Producto, Order
+# IMPORTAR MODELOS
+import app.models
 
+# IMPORTAR BLUEPRINT
 from app.routes.auth.routes import auth
 app.register_blueprint(auth)
 
@@ -20,6 +22,7 @@ app.register_blueprint(auth)
 def home():
     return "Amapola Gourmet funcionando"
 
+# CREAR TABLAS
 with app.app_context():
     db.create_all()
 
