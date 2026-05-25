@@ -8,6 +8,10 @@ from app.models import Producto
 
 main = Blueprint('main', __name__)
 
+@main.route('/favicon.ico')
+def favicon():
+    return ('', 204)
+
 def save_image(file):
     """Save uploaded image file and return the relative path"""
     if file and file.filename:

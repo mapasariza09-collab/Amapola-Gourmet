@@ -4,75 +4,147 @@
 
 {% block content %}
 <div class="container my-5">
-    <h2 class="text-center mb-4" style="color: #ff6b6b;">Historial de Compras</h2>
-
-    {% if orders %}
-    <div class="row">
-        {% for order in orders %}
-        <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow-lg" style="border-radius: 15px; height: 500px;">
-                <div class="card-header text-center" style="background: url('{{ order.product.img }}') center/cover no-repeat; height: 200px; border-radius: 15px 15px 0 0;">
-                </div>
-                <div class="card-body text-center" style="overflow-y: auto; max-height: 250px;">
-                    <h5 class="card-title" style="color: #ff6b6b;">{{ order.product.nombre }}</h5>
-                    <p class="card-text">{{ order.product.descripcion }}</p>
-                    <p class="card-text"><strong>Cantidad:</strong> {{ order.quantity }}</p>
-                    <p class="card-text"><strong>Total:</strong> ${{ order.total_price }}</p>
-                    <p class="card-text">
-                        <strong>Método de Pago:</strong>
-                        <span class="badge badge-info">
-                            {% if order.payment_method == 'contraentrega' %}
-                                Contraentrega
-                            {% elif order.payment_method == 'transferencia' %}
-                                Transferencia Bancaria
-                            {% elif order.payment_method == 'nequi' %}
-                                Nequi
-                            {% else %}
-                                {{ order.payment_method }}
-                            {% endif %}
-                        </span>
-                    </p>
-                    <p class="card-text">
-                        <strong>Estado:</strong>
-                        <span class="badge
-                            {% if order.status == 'pendiente' %}badge-warning
-                            {% elif order.status == 'confirmado' %}badge-info
-                            {% elif order.status == 'enviado' %}badge-primary
-                            {% elif order.status == 'entregado' %}badge-success
-                            {% else %}badge-secondary{% endif %}">
-                            {{ order.status }}
-                        </span>
-                    </p>
-                    {% if current_user.rol in ['admin', 'super_admin'] %}
-                    <form method="POST" action="{{ url_for('order.update_order', order_id=order.id) }}" class="mt-2">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <div class="form-row align-items-center">
-                            <div class="col-auto">
-                                <select name="status" class="form-control form-control-sm">
-                                    <option value="pendiente" {% if order.status == 'pendiente' %}selected{% endif %}>Pendiente</option>
-                                    <option value="confirmado" {% if order.status == 'confirmado' %}selected{% endif %}>Confirmado</option>
-                                    <option value="enviado" {% if order.status == 'enviado' %}selected{% endif %}>Enviado</option>
-                                    <option value="entregado" {% if order.status == 'entregado' %}selected{% endif %}>Entregado</option>
-                                    <option value="cancelado" {% if order.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
-                                </select>
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-sm btn-primary">Actualizar Estado</button>
+    {% if is_admin %}
+        <h2 class="text-center mb-4" style="color: #ff6b6b;">Pedidos por Día</h2>
+        
+        {% if days_data %}
+            {% for day_info in days_data %}
+                <h4 class="mt-4 mb-2" style="color: #722f37; border-bottom: 2px solid #e11111; padding-bottom: 4px;">
+                    📅 {{ day_info.date.strftime('%d/%m/%Y') }}
+                </h4>
+                
+                {% for group in day_info.clients %}
+                <div class="card mb-4 shadow-sm" style="border-left: 5px solid #e11111;">
+                    <!-- Datos del cliente para enviar el pedido -->
+                    <div class="card-header bg-light">
+                        <h5 class="mb-1" style="color: #722f37;">{{ group.user.nombre }}</h5>
+                        <div class="small">
+                            <strong>📧</strong> {{ group.user.correo }}<br>
+                            <strong>📍 Dirección de envío:</strong> {{ group.user.direccion }}<br>
+                            <strong>📞 Teléfono:</strong> {{ group.user.telefono }}
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <h6 class="mb-3">Pedidos de este cliente:</h6>
+                        
+                        {% for order in group.orders %}
+                        <div class="border rounded p-3 mb-3 bg-white">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <img src="{{ order.product.img }}" alt="{{ order.product.nombre }}" 
+                                         style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px;">
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>{{ order.product.nombre }}</strong><br>
+                                    <small class="text-muted">{{ order.product.descripcion[:80] }}...</small>
+                                    <div class="mt-1">
+                                        Cantidad: <strong>{{ order.quantity }}</strong> × ${{ order.product.precio }} = <strong>${{ order.total_price }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <p class="mb-1">
+                                        <strong>Estado:</strong> 
+                                        <span class="badge 
+                                            {% if order.status == 'pendiente' %}badge-warning
+                                            {% elif order.status == 'confirmado' %}badge-info
+                                            {% elif order.status == 'enviado' %}badge-primary
+                                            {% elif order.status == 'entregado' %}badge-success
+                                            {% else %}badge-secondary{% endif %}">
+                                            {{ order.status }}
+                                        </span>
+                                    </p>
+                                    
+                                    <form method="POST" action="{{ url_for('order.update_order', order_id=order.id) }}" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <div class="form-row align-items-center justify-content-end">
+                                            <div class="col-auto">
+                                                <select name="status" class="form-control form-control-sm" style="width: 130px;">
+                                                    <option value="pendiente" {% if order.status == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                                    <option value="confirmado" {% if order.status == 'confirmado' %}selected{% endif %}>Confirmado</option>
+                                                    <option value="enviado" {% if order.status == 'enviado' %}selected{% endif %}>Enviado</option>
+                                                    <option value="entregado" {% if order.status == 'entregado' %}selected{% endif %}>Entregado</option>
+                                                    <option value="cancelado" {% if order.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
+                                    <small class="text-muted d-block mt-1">{{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                </div>
                             </div>
                         </div>
-                    </form>
-                    {% endif %}
-                    <p class="card-text"><small class="text-muted">Fecha: {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</small></p>
+                        {% endfor %}
+                        
+                        <div class="text-right mt-2">
+                            <strong style="font-size: 1.1rem; color: #28a745;">Total a cobrar de este cliente: ${{ "%.2f"|format(group.total) }}</strong>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endfor %}
+        {% else %}
+            <div class="text-center">
+                <p>No hay pedidos registrados.</p>
+            </div>
+        {% endif %}
+    
+    {% else %}
+        <!-- Vista normal para clientes -->
+        <h2 class="text-center mb-4" style="color: #ff6b6b;">Historial de Compras</h2>
+        
+        {% if orders %}
+        <div class="row">
+            {% for order in orders %}
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-lg" style="border-radius: 15px; height: 500px;">
+                    <img src="{{ order.product.img }}" alt="{{ order.product.nombre }}" 
+                         style="width: 100%; height: 220px; object-fit: cover; display: block; border-radius: 15px 15px 0 0;">
+                    <div class="card-body text-center" style="overflow-y: auto; max-height: 250px;">
+                        <h5 class="card-title" style="color: #ff6b6b;">{{ order.product.nombre }}</h5>
+                        <p class="card-text">{{ order.product.descripcion }}</p>
+                        <p class="card-text"><strong>Cantidad:</strong> {{ order.quantity }}</p>
+                        <p class="card-text"><strong>Total:</strong> ${{ order.total_price }}</p>
+                        <p class="card-text">
+                            <strong>Método de Pago:</strong>
+                            <span class="badge badge-info">
+                                {% if order.payment_method == 'contraentrega' %}
+                                    Contraentrega
+                                {% elif order.payment_method == 'transferencia' %}
+                                    Transferencia Bancaria
+                                {% elif order.payment_method == 'nequi' %}
+                                    Nequi
+                                {% else %}
+                                    {{ order.payment_method }}
+                                {% endif %}
+                            </span>
+                        </p>
+                        <p class="card-text">
+                            <strong>Estado:</strong>
+                            <span class="badge
+                                {% if order.status == 'pendiente' %}badge-warning
+                                {% elif order.status == 'confirmado' %}badge-info
+                                {% elif order.status == 'enviado' %}badge-primary
+                                {% elif order.status == 'entregado' %}badge-success
+                                {% else %}badge-secondary{% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </p>
+                        <p class="card-text"><small class="text-muted">Fecha: {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</small></p>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="text-center">
-        <p>No has realizado ninguna orden aún.</p>
-        <a href="{{ url_for('main.home') }}" class="btn btn-primary">Ver Menú</a>
-    </div>
+        {% else %}
+        <div class="text-center">
+            <p>No has realizado ninguna orden aún.</p>
+            <a href="{{ url_for('main.home') }}" class="btn btn-primary">Ver Menú</a>
+        </div>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

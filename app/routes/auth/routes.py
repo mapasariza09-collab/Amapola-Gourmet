@@ -32,6 +32,8 @@ def register():
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    error = None
+    identificador = None
     if request.method == 'POST':
         identificador = request.form.get('correo')
         password = request.form.get('password')
@@ -41,12 +43,13 @@ def login():
 
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('main.home'))
+            flash('¡Inicio de sesión exitoso!', 'success')
+            return redirect('/')
         else:
-            flash('Credenciales inválidas.', 'danger')
+            error = 'Credenciales inválidas.'
 
     productos = Producto.query.all()
-    return render_template('login.html', productos=productos)
+    return render_template('login.html', productos=productos, error=error, identificador=identificador)
 
 @auth.route('/logout')
 @login_required
@@ -93,6 +96,3 @@ def reset_password(token):
         db.session.commit()
         return redirect(url_for('auth.login'))
     return render_template('reset_password.html')
-@auth.route('/')
-def home():
-    return redirect(url_for('auth.login'))

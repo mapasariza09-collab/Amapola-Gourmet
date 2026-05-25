@@ -6,6 +6,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='WhatsApp Image 2026-04-28 at 2.27.51 PM.jpeg') }}" type="image/jpeg">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='WhatsApp Image 2026-04-28 at 2.27.51 PM.jpeg') }}" type="image/jpeg">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
@@ -14,9 +15,10 @@
         <a class="navbar-brand text-white font-weight-bold" href="{{ url_for('main.home') }}">🌸 Amapola Gourmet</a>
         <div class="navbar-nav ml-auto">
              {% if current_user.is_authenticated %}
-                 {% if current_user.rol in ['admin', 'super_admin'] %}
-                 <a class="nav-link text-white" href="{{ url_for('order.dashboard') }}">Dashboard</a>
-                 <a class="nav-link text-white" href="{{ url_for('order.mis_ordenes') }}">Ver Órdenes</a>
+                  {% if current_user.rol in ['admin', 'super_admin'] %}
+                  <a class="nav-link text-white" href="{{ url_for('order.dashboard') }}">Dashboard</a>
+                   <a class="btn btn-outline-light btn-sm ml-2" href="{{ url_for('main.admin_productos') }}">Productos</a>
+                  <a class="nav-link text-white" href="{{ url_for('order.mis_ordenes') }}">Ver Órdenes</a>
                  {% else %}
                  <a class="nav-link text-white" href="{{ url_for('order.mis_ordenes') }}">Historial</a>
                  {% endif %}
@@ -67,5 +69,20 @@
             </div>
         </div>
     </footer>
+
+<script>
+  // Ocultar automáticamente TODAS las alertas después de 3 segundos (funciona sin depender de jQuery completo)
+  setTimeout(function() {
+    document.querySelectorAll('.alert').forEach(function(alert) {
+      alert.style.transition = 'opacity 0.5s ease';
+      alert.style.opacity = '0';
+      setTimeout(function() {
+        if (alert && alert.parentNode) {
+          alert.parentNode.removeChild(alert);
+        }
+      }, 500);
+    });
+  }, 3000);
+</script>
 </body>
 </html>

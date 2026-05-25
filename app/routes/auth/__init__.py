@@ -51,4 +51,4 @@ def logout():
     return redirect(url_for('auth.login'))
 @auth.route('/')
 def home():
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.home'))

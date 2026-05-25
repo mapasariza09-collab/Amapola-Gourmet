@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from sqlalchemy import func, extract
 from flask_mail import Message
+from collections import defaultdict
 from app import db, mail
 from app.models import Producto, Order
 
@@ -67,10 +68,34 @@ def ordenar():
 @login_required
 def mis_ordenes():
     if current_user.rol in ['admin', 'super_admin']:
-        orders = Order.query.order_by(Order.created_at.desc()).all()
+        all_orders = Order.query.order_by(Order.created_at.desc()).all()
+        
+        # Agrupar primero por día, luego por cliente
+        daily = defaultdict(lambda: defaultdict(list))
+        for o in all_orders:
+            day = o.created_at.date()
+            daily[day][o.user_id].append(o)
+        
+        days_data = []
+        for day in sorted(daily.keys(), reverse=True):  # más recientes primero
+            day_groups = []
+            for user_id, user_orders in daily[day].items():
+                user = user_orders[0].user
+                total = sum(oo.total_price for oo in user_orders)
+                day_groups.append({
+                    'user': user,
+                    'orders': user_orders,
+                    'total': total
+                })
+            days_data.append({
+                'date': day,
+                'clients': day_groups
+            })
+        
+        return render_template('mis_ordenes.html', days_data=days_data, is_admin=True)
     else:
         orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).all()
-    return render_template('mis_ordenes.html', orders=orders)
+        return render_template('mis_ordenes.html', orders=orders, is_admin=False)
 
 @order.route('/update_order/<int:order_id>', methods=['POST'])
 @login_required
