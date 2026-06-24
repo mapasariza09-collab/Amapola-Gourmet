@@ -9,5 +9,5 @@ with app.app_context():
         print(f"- Nombre: {user.nombre}")
         print(f"  Email: {user.correo}")
         print(f"  Rol: {user.rol}")
-        print(f"  Dirección: {user.direccion}")
+        print(f"  DirecciÃ³n: {user.direccion}")
         print()

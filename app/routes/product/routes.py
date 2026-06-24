@@ -144,4 +144,4 @@ def eliminar_producto(id):
     except Exception as e:
         db.session.rollback()
         flash(f'Error al eliminar el producto: {str(e)}', 'danger')
-    return redirect(url_for('product.productos'))
+    return redirect(url_for('product.productos'))

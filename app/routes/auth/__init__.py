@@ -16,7 +16,7 @@ def register():
 
         user = User.query.filter_by(correo=correo).first()
         if user:
-            flash('El correo ya está registrado.', 'danger')
+            flash('El correo ya estÃ¡ registrado.', 'danger')
             return redirect(url_for('auth.register'))
 
         new_user = User(nombre=nombre, correo=correo, direccion=direccion, telefono=telefono, rol='cliente')
@@ -40,7 +40,7 @@ def login():
             login_user(user)
             return redirect(url_for('main.home'))
         else:
-            flash('Credenciales inválidas.', 'danger')
+            flash('Credenciales invÃ¡lidas.', 'danger')
 
     return render_template('login.html')
 

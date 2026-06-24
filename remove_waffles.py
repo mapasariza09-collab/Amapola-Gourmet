@@ -7,7 +7,7 @@ with app.app_context():
 
     # Waffles a eliminar
     waffles_a_eliminar = [
-        'Waffles Clásicos',
+        'Waffles ClÃ¡sicos',
         'Waffles con Frutas',
         'Waffles con Chocolate'
     ]

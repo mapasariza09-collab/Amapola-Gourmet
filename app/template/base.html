@@ -17,7 +17,7 @@
              {% if current_user.is_authenticated %}
                   {% if current_user.rol in ['admin', 'super_admin'] %}
                   <a class="nav-link text-white" href="{{ url_for('order.dashboard') }}">Dashboard</a>
-                   <a class="btn btn-outline-light btn-sm ml-2" href="{{ url_for('main.admin_productos') }}">Productos</a>
+                   <a class="btn btn-light btn-sm ml-2" href="{{ url_for('main.admin_productos') }}">Productos</a>
                   <a class="nav-link text-white" href="{{ url_for('order.mis_ordenes') }}">Ver Órdenes</a>
                  {% else %}
                  <a class="nav-link text-white" href="{{ url_for('order.mis_ordenes') }}">Historial</a>

@@ -7,7 +7,7 @@ with app.app_context():
 
     # Nuevos productos para agregar
     nuevos_productos = [
-        Producto(nombre='Waffles Clásicos', descripcion='Waffles esponjosos servidos con mantequilla y maple.', precio=8.99, img='https://images.unsplash.com/photo-1509365465985-25d11c17e446?w=400'),
+        Producto(nombre='Waffles ClÃ¡sicos', descripcion='Waffles esponjosos servidos con mantequilla y maple.', precio=8.99, img='https://images.unsplash.com/photo-1509365465985-25d11c17e446?w=400'),
         Producto(nombre='Waffles con Frutas', descripcion='Waffles con fresas frescas, bananas y miel.', precio=10.50, img='https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400'),
         Producto(nombre='Waffles con Chocolate', descripcion='Waffles cubiertos de chocolate fundido y nueces.', precio=9.99, img='https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400'),
         Producto(nombre='Tarta de Chocolate', descripcion='Tarta de chocolate negro con ganache y frutos rojos.', precio=7.50, img='https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400'),
