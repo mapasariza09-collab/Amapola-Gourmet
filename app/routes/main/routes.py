@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from functools import wraps
 from werkzeug.utils import secure_filename
-from app import db
+from app.extensions import db
 from app.models import Producto
 
 main = Blueprint('main', __name__)

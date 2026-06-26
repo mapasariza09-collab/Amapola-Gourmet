@@ -54,14 +54,13 @@
 <script>
 function updateQuantity(productId, newQuantity) {
     if (newQuantity < 0) newQuantity = 0;
-    // Create a form and submit
     var form = document.createElement('form');
     form.method = 'POST';
     form.action = '/cart/update_cart/' + productId;
     var csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
     csrfInput.name = 'csrf_token';
-    csrfInput.value = '{{ csrf_token() }}';
+    csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     form.appendChild(csrfInput);
     var quantityInput = document.createElement('input');
     quantityInput.type = 'hidden';

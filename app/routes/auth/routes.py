@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required
 from flask_mail import Message
-from app import db, mail
+from app.extensions import db, mail
 from app.models import User, Producto
 
 auth = Blueprint('auth', __name__)
@@ -17,7 +17,7 @@ def register():
 
         user = User.query.filter_by(correo=correo).first()
         if user:
-            flash('El correo ya estÃÂ¡ registrado.', 'danger')
+            flash('El correo ya está registrado.', 'danger')
             return redirect(url_for('auth.register'))
 
         new_user = User(nombre=nombre, correo=correo, direccion=direccion, telefono=telefono, rol='cliente')
@@ -43,10 +43,10 @@ def login():
 
         if user and user.check_password(password):
             login_user(user)
-            flash('ÃÂ¡Inicio de sesiÃÂ³n exitoso!', 'success')
+            flash('¡Inicio de sesión exitoso!', 'success')
             return redirect('/')
         else:
-            error = 'Credenciales invÃÂ¡lidas.'
+            error = 'Credenciales inválidas.'
 
     productos = Producto.query.all()
     return render_template('login.html', productos=productos, error=error, identificador=identificador)
@@ -64,17 +64,17 @@ def forgot_password():
         user = User.query.filter_by(correo=correo).first()
         if user:
             token = user.get_reset_token()
-            msg = Message('RecuperaciÃÂ³n de ContraseÃÂ±a - Amapola Gourmet',
+            msg = Message('Recuperación de Contraseña - Amapola Gourmet',
                           recipients=[correo])
             msg.body = f'''Hola {user.nombre},
 
-Has solicitado recuperar tu contraseÃÂ±a para Amapola Gourmet.
+Has solicitado recuperar tu contraseña para Amapola Gourmet.
 
-Para restablecer tu contraseÃÂ±a, visita el siguiente enlace:
+Para restablecer tu contraseña, visita el siguiente enlace:
 
 {url_for('auth.reset_password', token=token, _external=True)}
 
-Este enlace expirarÃÂ¡ en 30 minutos.
+Este enlace expirará en 30 minutos.
 
 Si no solicitaste este cambio, ignora este mensaje.
 

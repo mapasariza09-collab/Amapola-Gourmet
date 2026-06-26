@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from sqlalchemy import func, extract
 from flask_mail import Message
 from collections import defaultdict
-from app import db, mail
+from app.extensions import db, mail
 from app.models import Producto, Order
 
 order = Blueprint('order', __name__)
@@ -21,23 +21,23 @@ def ordenar():
         delivery_address = request.form.get('direccion_envio', '').strip()
 
         if not product_id or not quantity or quantity <= 0:
-            flash('Selecciona un producto y una cantidad vÃÂÃÂ¡lida.', 'danger')
+            flash('Selecciona un producto y una cantidad válida.', 'danger')
             return render_template('order.html', productos=productos, selected_product_id=selected_product_id)
 
         if payment_method not in ['transferencia', 'contraentrega', 'nequi']:
-            flash('MÃÂÃÂ©todo de pago no vÃÂÃÂ¡lido.', 'danger')
+            flash('Método de pago no válido.', 'danger')
             return render_template('order.html', productos=productos, selected_product_id=selected_product_id)
 
         if not delivery_address:
-            flash('Por favor ingresa la direcciÃÂÃÂ³n de envÃÂÃÂ­o.', 'danger')
+            flash('Por favor ingresa la dirección de envío.', 'danger')
             return render_template('order.html', productos=productos, selected_product_id=selected_product_id)
 
         if not delivery_address:
-            flash('Por favor ingresa la direcciÃÂÃÂ³n de envÃÂÃÂ­o.', 'danger')
+            flash('Por favor ingresa la dirección de envío.', 'danger')
             return render_template('order.html', productos=productos, selected_product_id=selected_product_id)
 
         if payment_method not in ['transferencia', 'contraentrega', 'nequi']:
-            flash('MÃÂÃÂ©todo de pago no vÃÂÃÂ¡lido.', 'danger')
+            flash('Método de pago no válido.', 'danger')
             return render_template('order.html', productos=productos, selected_product_id=selected_product_id)
 
         producto = Producto.query.get_or_404(product_id)
@@ -56,7 +56,7 @@ def ordenar():
         try:
             db.session.add(nueva_orden)
             db.session.commit()
-            flash('ÃÂÃÂ¡Orden realizada exitosamente!', 'success')
+            flash('¡Orden realizada exitosamente!', 'success')
             return redirect(url_for('main.home'))
         except Exception as e:
             db.session.rollback()
@@ -70,14 +70,14 @@ def mis_ordenes():
     if current_user.rol in ['admin', 'super_admin']:
         all_orders = Order.query.order_by(Order.created_at.desc()).all()
         
-        # Agrupar primero por dÃÂÃÂ­a, luego por cliente
+        # Agrupar primero por día, luego por cliente
         daily = defaultdict(lambda: defaultdict(list))
         for o in all_orders:
             day = o.created_at.date()
             daily[day][o.user_id].append(o)
         
         days_data = []
-        for day in sorted(daily.keys(), reverse=True):  # mÃÂÃÂ¡s recientes primero
+        for day in sorted(daily.keys(), reverse=True):  # más recientes primero
             day_groups = []
             for user_id, user_orders in daily[day].items():
                 user = user_orders[0].user
@@ -101,7 +101,7 @@ def mis_ordenes():
 @login_required
 def update_order(order_id):
     if current_user.rol not in ['admin', 'super_admin']:
-        flash('No tienes permisos para esta acciÃÂÃÂ³n.', 'danger')
+        flash('No tienes permisos para esta acción.', 'danger')
         return redirect(url_for('order.mis_ordenes'))
 
     order = Order.query.get_or_404(order_id)
@@ -119,9 +119,9 @@ def update_order(order_id):
 
 Tu pedido de {order.product.nombre} (Cantidad: {order.quantity}) ha sido confirmado.
 
-DirecciÃÂÃÂ³n de entrega: {order.delivery_address}
+            Dirección de entrega: {order.delivery_address}
 
-MÃÂÃÂ©todo de pago: {order.payment_method}
+            Método de pago: {order.payment_method}
 
 Total: ${order.total_price}
 
@@ -139,9 +139,9 @@ Equipo de Amapola Gourmet
 
 Tu pedido de {order.product.nombre} (Cantidad: {order.quantity}) ha sido enviado.
 
-DirecciÃÂÃÂ³n de entrega: {order.delivery_address}
+            Dirección de entrega: {order.delivery_address}
 
-MÃÂÃÂ©todo de pago: {order.payment_method}
+            Método de pago: {order.payment_method}
 
 Total: ${order.total_price}
 
@@ -154,7 +154,7 @@ Equipo de Amapola Gourmet
 
         flash('Estado de la orden actualizado.', 'success')
     else:
-        flash('Estado no vÃÂÃÂ¡lido.', 'danger')
+        flash('Estado no válido.', 'danger')
 
     return redirect(url_for('order.mis_ordenes'))
 
@@ -273,7 +273,7 @@ def remove_from_cart(product_id):
 def checkout():
     cart_items = session.get('cart', {})
     if not cart_items:
-        flash('Tu carrito estÃÂÃÂ¡ vacÃÂÃÂ­o.', 'warning')
+        flash('Tu carrito está vacío.', 'warning')
         return redirect(url_for('order.cart'))
 
     productos = Producto.query.filter(Producto.id.in_(cart_items.keys())).all()
@@ -283,11 +283,11 @@ def checkout():
         delivery_address = request.form.get('direccion_envio', '').strip()
 
         if payment_method not in ['transferencia', 'contraentrega', 'nequi']:
-            flash('MÃÂÃÂ©todo de pago no vÃÂÃÂ¡lido.', 'danger')
+            flash('Método de pago no válido.', 'danger')
             return redirect(url_for('order.checkout'))
 
         if not delivery_address:
-            flash('Por favor ingresa la direcciÃÂÃÂ³n de envÃÂÃÂ­o.', 'danger')
+            flash('Por favor ingresa la dirección de envío.', 'danger')
             return redirect(url_for('order.checkout'))
 
         # Create orders for each cart item
@@ -309,11 +309,11 @@ def checkout():
         try:
             db.session.commit()
             session.pop('cart', None)  # Clear cart after successful order
-            flash('ÃÂÃÂ¡ÃÂÃÂrdenes realizadas exitosamente!', 'success')
+            flash('¡Órdenes realizadas exitosamente!', 'success')
             return redirect(url_for('order.mis_ordenes'))
         except Exception as e:
             db.session.rollback()
-            flash(f'Error al realizar las ÃÂÃÂ³rdenes: {str(e)}', 'danger')
+            flash(f'Error al realizar las órdenes: {str(e)}', 'danger')
             return redirect(url_for('order.checkout'))
 
     total = sum(producto.precio * cart_items.get(str(producto.id), 0) for producto in productos)
